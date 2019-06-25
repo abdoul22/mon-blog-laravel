@@ -10,7 +10,9 @@ class PageController extends Controller
         $boy = "good boy";
         return view('hello',compact('boy'));
     }
-
+//git add .
+//git commit -m "adding auth"
+//git push
     public function index(){
         return view('pages.index');
     }

@@ -15,3 +15,10 @@
 </div>
     
 @endif
+
+@if (session('erro'))
+<div class="alert alert-danger">
+    {{session('error')}}
+</div>
+    
+@endif

@@ -13,6 +13,7 @@
                                 <div class="card-header bg-dark text-white">
                                 {{$post->title}}
                             </div>
+                        <img src="{{asset('storage/coverImages/' . $post->image)}}" alt="" height="200">
                             <div class="card-body">
                                 <div class="card-title">
                                 <h4>{{$post->title}}</h4>

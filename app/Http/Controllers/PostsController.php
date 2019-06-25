@@ -8,6 +8,10 @@ use DB;
 
 class PostsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->except('index','show');
+    }
     //index page
     public function index() {
         //tech 1 $posts = post::where('id',5)->get();
@@ -36,11 +40,22 @@ class PostsController extends Controller
     public function store(Request $request){
         $request->validate([
             'title' => 'required|max:200',
-            'body' => 'required|max:500'
+            'body' => 'required|max:500',
+            'coverImage' => 'image|mimes:jpeg,bmp,png|max:1999'
         ]);
+        if($request->hasFile('coverImage')){
+            $file = $request->file('coverImage');
+            $ext = $file->getClientOriginalExtension();
+            $fileName = 'cover_image' . '_' . time() . '.' .$ext;
+            $file->storeAs('public/coverImages', $fileName);
+        }else{
+            $fileName = 'pas d\'image';
+        }
         $post = new Post();
         $post->title = $request->title;
         $post->body = $request->body;
+        $post->image = $fileName;
+        $post->user_id = auth()->user()->id;
 
         $post->save();
 
@@ -52,16 +67,35 @@ class PostsController extends Controller
 
     public function edit($id){
         $post = Post::find($id);
+        if(auth()->user()->id != $post->user_id){
+            return redirect('/posts')->with('error','vous n\'etes pas autorisé');
+        }
+        $post->title;
+        $post->body;
         $post->save();  
         return view('posts.edit',compact('post'));
 
 
     }
-    public function update($id){
+    public function update(Request $request, $id){
+        $request->validate([
+            'title' => 'required|max:200',
+            'body' => 'required|max:500'
+        ]);
         $post = Post::find($id);
-        return view('posts.show',compact('post'));
+        $post->title = $request->title;
+        $post->body = $request->body;
+        $post->save();
+
+       return redirect('/posts')->with('status','l\'article a étè modifiée');
 
 
+    }
+    
+    public function destroy($id){
+        $post = Post::find($id);
+        $post->delete();
+        return redirect('/posts')->with('status','l\'article à étè supprimer');
     }
 
 }
